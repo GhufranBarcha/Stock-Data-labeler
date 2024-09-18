@@ -53,23 +53,24 @@ def create_line_chart(df, x_column, y_column):
     return fig
 
 def update_chart_with_annotations(fig, annotations):
-    for ann in annotations:
-        fig.add_annotation(
-            x=ann['x'],
-            y=ann['y'],
-            text=ann['label'],
-            showarrow=True,
-            arrowhead=2,
-            arrowsize=1,
-            arrowwidth=2,
-            # Reverse the arrow color logic
-            arrowcolor="green" if ann['label'] == 'Buy' else "red",
-            font=dict(size=10, color="green" if ann['label'] == 'Buy' else "red"),
-            align="center",
-            # Reverse the arrow positioning logic
-            ax=0,
-            ay=40 if ann['label'] == 'Buy' else -40
-        )
+    if st.session_state.label_mode != 'No Label Mode':  # Only add annotations when not in No Label Mode
+        for ann in annotations:
+            fig.add_annotation(
+                x=ann['x'],
+                y=ann['y'],
+                text=ann['label'],
+                showarrow=True,
+                arrowhead=2,
+                arrowsize=1,
+                arrowwidth=2,
+                # Reverse the arrow color logic
+                arrowcolor="green" if ann['label'] == 'Buy' else "red",
+                font=dict(size=10, color="green" if ann['label'] == 'Buy' else "red"),
+                align="center",
+                # Reverse the arrow positioning logic
+                ax=0,
+                ay=40 if ann['label'] == 'Buy' else -40
+            )
     fig.update_layout(
         title='Stock Price Chart with Buy/Sell Annotations',
         xaxis_title=st.session_state.x_column,
@@ -99,7 +100,7 @@ uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
 
 if uploaded_file is not None:
     st.session_state.df = load_data(uploaded_file)
-    st.dataframe(st.session_state.df , use_container_width=True ,height = 300)
+    st.dataframe(st.session_state.df, use_container_width=True, height=300)
     with st.container(border=True):
         st.markdown("<h3 style='text-align: center; color: #ffeded'>Select Axis</h3>", unsafe_allow_html=True)
         if st.session_state.x_column is None:
@@ -138,7 +139,6 @@ if uploaded_file is not None:
         buy_button_style = 'selected' if st.session_state.label_mode == 'Buy' else ''
         sell_button_style = 'selected' if st.session_state.label_mode == 'Sell' else ''
         no_label_button_style = 'selected' if st.session_state.label_mode == 'No Label Mode' else ''
-
 
         st.markdown(f"<p style='text-align: center; color: red !important;'> Mode: {st.session_state.label_mode}</p>", unsafe_allow_html=True)
 
